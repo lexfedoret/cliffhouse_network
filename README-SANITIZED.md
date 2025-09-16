@@ -10,17 +10,26 @@ This sanitized configuration provides a complete enterprise-grade setup for Mikr
 - **Advanced Failover**: Policy-based routing with health monitoring
 - **Zero-Trust Security**: Comprehensive firewall with network isolation
 
-## ⚠️ IMPORTANT: Sanitization Notice
+## ⚠️ Sanitization Notice
 
-**This is a sanitized version of the original configuration files. All sensitive information has been replaced with placeholders:**
+**This is a sanitized version of the original configuration files. The following sensitive information has been replaced with placeholders:**
 
-- **Passwords**: Replace `CHANGE_THIS_PASSWORD` with strong passwords
-- **SSIDs**: Replace `network-*` with your desired network names
-- **WiFi Passwords**: Replace `*_WIFI_PASSWORD` with strong WiFi passwords
-- **Device Names**: Replace `router-main`, `cap-device-LOCATION` with your naming scheme
-- **ISP Settings**: Replace `backup.carrier.com` with your carrier's APN
-- **Location Names**: Replace `[LOCATION]` with actual locations
-- **Dates**: Replace `[DATE]` with current dates
+### **Sanitized Variables:**
+- **Admin passwords** → **`YOUR_ADMIN_PASSWORD`** (all admin passwords)
+- **System identities** → **`YOUR_ROUTER_NAME`**, **`YOUR_CAP_NAME`** (device names)
+- **Time zone** → **`YOUR_TIME_ZONE`** (system time zone setting)
+- **Country** → **`YOUR_COUNTRY`** (WiFi country setting)
+- **ISP MTU** → **`YOUR_ISP_MTU`** (ISP-specific MTU setting for WAN interface)
+- **WiFi SSIDs** → **`network-mgmt`**, **`network-infra`**, **`network-data`**, **`network-alterdata`**, **`network-guest`** (all network names)
+- **WiFi passwords** → **`MGMT_WIFI_PASSWORD`**, **`INFRA_WIFI_PASSWORD`**, **`DATA_WIFI_PASSWORD`**, **`ALTERDATA_WIFI_PASSWORD`**, **`GUEST_WIFI_PASSWORD`** (all WiFi passwords)
+- **DNS servers** → **`8.8.8.8,8.8.4.4,1.1.1.1`** (public DNS instead of ISP-specific)
+- **WAN interface comments** → **`->wan`**, **`->backup-carrier`** (generic WAN references)
+- **Carrier settings** → **`backup.carrier.com`** (generic carrier APN)
+- **Device comments** → **`->device1`**, **`->device2`**, **`->device3`** (generic device references)
+- **Backhaul references** → **`->backhaul->caps`**, **`backhaul trunk`** (generic backhaul descriptions)
+- **Neighbor groups** → **`REPLACE_WITH_ACTUAL_HASH`** (placeholders for real CAPsMAN-generated hashes)
+- **Dates** → **`[DATE]`** (placeholder for configuration dates)
+- **Location references** → **`[LOCATION]`** (placeholder for physical locations)
 
 ## Configuration Sequence
 
@@ -29,8 +38,8 @@ This sanitized configuration provides a complete enterprise-grade setup for Mikr
 1. **`router-base-sanitized.rsc`** - Core router & CAPsMAN setup
 2. **`router-base-mtu-sanitized.rsc`** - MTU optimization for performance  
 3. **`router-base-steering-sanitized.rsc`** - WiFi band steering for CAP devices
-4. **`router-failover-sanitized.rsc`** - Advanced WAN failover & monitoring
-5. **`router-firewall-sanitized.rsc`** - Comprehensive security rules
+
+**Note**: Failover and firewall configurations are not included in this sanitized version as they have not been fully tested yet.
 
 ## Network Architecture
 
@@ -61,138 +70,11 @@ This sanitized configuration provides a complete enterprise-grade setup for Mikr
 | **ether5** | WAN Connection | WAN | Primary internet |
 | **lte1** | Backup WAN | WAN | Backup internet |
 
-## Pre-Deployment Customization
-
-### 1. Security Settings
-```routeros
-# Change admin password
-/user set admin password="YourStrongPassword123!"
-
-# Update WiFi passwords in security configurations
-/interface wifi security set sec-mgmt passphrase="YourMgmtWiFiPassword"
-/interface wifi security set sec-infra passphrase="YourInfraWiFiPassword"
-/interface wifi security set sec-data passphrase="YourDataWiFiPassword"
-/interface wifi security set sec-alterdata passphrase="YourAltDataWiFiPassword"
-/interface wifi security set sec-guest passphrase="YourGuestWiFiPassword"
-```
-
-### 2. Network Naming
-```routeros
-# Update system identity
-/system identity set name="your-router-name"
-
-# Update WiFi network names
-/interface wifi configuration set infra-2ghz ssid="your-infra-network"
-/interface wifi configuration set data-2ghz ssid="your-data-network"
-/interface wifi configuration set guest-2ghz ssid="your-guest-network"
-/interface wifi configuration set mgmt-5ghz ssid="your-mgmt-network"
-/interface wifi configuration set alterdata-5ghz ssid="your-alterdata-network"
-```
-
-### 3. Carrier-Specific Settings
-```routeros
-# Update APN for your backup carrier
-/interface lte apn set [find name="backup.carrier.com"] name="your-carrier-apn" apn="your-carrier-apn"
-
-# Common carrier APNs:
-# T-Mobile: "fast.t-mobile.com"
-# Verizon: "vzwinternet"
-# AT&T: "broadband"
-```
-
-### 4. CAP Device Configuration
-```routeros
-# For each CAP device, update identity
-/system identity set name="cap-device-location-name"
-
-# Update comments and descriptions as needed
-```
-
-## Installation Steps
-
-### Prerequisites
-1. **Factory reset** all devices (main router + CAP devices)
-2. **Backhaul adapters** installed and connected
-3. **Customize configurations** with your specific settings
-4. **Document passwords** securely
-
-### Method 1: WinBox (Recommended)
-
-#### Main Router Setup
-1. Connect to router via **ether1-3** (avoid ether4/ether5)
-2. Open WinBox → Connect to `192.168.88.1` or MAC address
-3. Login: `admin` / (no password initially)
-4. **Upload all customized configuration files** via Files menu
-5. **Apply configurations in sequence:**
-   ```routeros
-   /import router-base-sanitized.rsc
-   # Wait for completion, verify CAPsMAN is working
-   
-   /import router-base-mtu-sanitized.rsc
-   # Apply MTU optimizations
-   
-   /import router-base-steering-sanitized.rsc
-   # Configure WiFi steering (update neighbor groups first!)
-   
-   /import router-failover-sanitized.rsc
-   # Add advanced failover
-   
-   /import router-firewall-sanitized.rsc
-   # Apply security rules
-   ```
-6. **Reboot**: `/system reboot`
-
-#### CAP Device Setup
-1. **Factory reset** each CAP device
-2. Connect via ethernet temporarily
-3. Upload and apply customized CAP configuration:
-   ```routeros
-   /import cap-device-sanitized.rsc
-   ```
-4. **Connect backhaul** and remove ethernet
-5. **Verify discovery** on main router: `/interface wifi capsman remote-cap print`
-
-## Post-Installation Configuration
-
-### 1. Verify CAPsMAN Operation
-```routeros
-# Check CAPsMAN status
-/interface wifi capsman print
-
-# Verify CAP discovery
-/interface wifi capsman remote-cap print
-
-# Check provisioned interfaces
-/interface wifi print
-```
-
-### 2. Update WiFi Steering (IMPORTANT!)
-```routeros
-# Check neighbor groups (after CAPs are provisioned)
-/interface wifi neighbor print
-
-# Update steering configuration with actual group names
-/interface wifi steering set cap-steering-mgmt neighbor-group="actual-group-name"
-# Repeat for all steering entries
-```
-
-### 3. Verify Network Connectivity
-```routeros
-# Test VLAN connectivity
-/ping 192.168.254.254 count=3  # Management
-/ping 192.168.255.1 count=3    # Infrastructure  
-/ping 172.16.250.1 count=3     # Data
-/ping 172.16.252.1 count=3     # Guest
-
-# Check DHCP leases
-/ip dhcp-server lease print
-```
-
-## Security Considerations
+## Security Considerations (Cheat Sheet)
 
 ### Management Access
 - **Management WiFi**: Provides full admin access to all devices
-- **Service Restrictions**: All management services restricted to management subnet
+- **Service Restrictions**: All management services restricted to management subnet (192.168.254.0/24)
 - **Strong Passwords**: Use complex passwords for all accounts and WiFi networks
 - **Regular Updates**: Keep RouterOS updated on all devices
 
@@ -202,10 +84,16 @@ This sanitized configuration provides a complete enterprise-grade setup for Mikr
 - **Guest Isolation**: Guest network completely isolated from private networks
 - **Firewall Logging**: Enable logging for security monitoring
 
-## Troubleshooting
+## Troubleshooting Tips (Cheat Sheet)
 
 ### CAPsMAN Issues
 ```routeros
+# Check CAPsMAN status
+/interface wifi capsman print
+
+# Verify CAP discovery
+/interface wifi capsman remote-cap print
+
 # Check CAPsMAN logs
 /log print where topics~"caps"
 
@@ -216,16 +104,67 @@ This sanitized configuration provides a complete enterprise-grade setup for Mikr
 /interface wifi provisioning print
 ```
 
+### WiFi Steering Issues
+```routeros
+# Check neighbor groups
+/interface wifi steering neighbor-group print
+
+# Verify steering policies
+/interface wifi steering print
+
+# Monitor client steering behavior
+/interface wifi registration-table print
+```
+
 ### Network Connectivity
 ```routeros
-# Test inter-VLAN connectivity (should be blocked per security rules)
+# Test VLAN connectivity
+/ping 192.168.254.254 count=3  # Management
+/ping 192.168.255.1 count=3    # Infrastructure  
+/ping 172.16.250.1 count=3     # Data
+/ping 172.16.252.1 count=3     # Guest
+
+# Test inter-VLAN isolation (should be blocked per security rules)
 /tool ping address=192.168.255.1 interface=vlan3  # Should fail (data→infra)
+
+# Check DHCP leases
+/ip dhcp-server lease print
 
 # Check firewall rules
 /ip firewall filter print
 
 # Monitor connections
 /ip firewall connection print
+```
+
+### Failover Monitoring
+```routeros
+# Check failover status
+/system script environment print
+
+# Monitor failover events  
+/log print where topics~"info"
+
+# View active routes
+/ip route print where active
+
+# Check WAN interface status
+/interface print stats
+```
+
+### Performance Monitoring
+```routeros
+# Monitor WiFi performance
+/interface wifi monitor wifi1
+
+# Check CPU usage
+/system resource print
+
+# Monitor interface statistics
+/interface print stats
+
+# Check client distribution across CAPs
+/interface wifi registration-table print
 ```
 
 ## Backup and Maintenance
@@ -241,35 +180,40 @@ This sanitized configuration provides a complete enterprise-grade setup for Mikr
 
 ### Health Monitoring
 ```routeros
-# Check failover status
-/system script environment print
+# Check system health
+/system health print
 
-# Monitor failover events  
-/log print where topics~"info"
+# Monitor logs
+/log print
 
-# View active routes
-/ip route print where active
+# Check disk usage
+/system resource print
 ```
 
-## Support Resources
+## Resources and Inspiration
 
+This configuration was developed using the following resources:
+
+### **Primary Inspiration:**
+- **MikroTik Forum Discussion**: [Chateau LTE12 and self-managed WiFi with CAPsMAN](https://forum.mikrotik.com/t/chateau-lte12-and-self-managed-wifi-with-capsman/176219) - The working forum example that heavily inspired this configuration approach
+
+### **Official Documentation:**
 - **MikroTik Documentation**: https://help.mikrotik.com/docs/
 - **CAPsMAN Guide**: https://help.mikrotik.com/docs/display/ROS/CAPsMAN
 - **WiFi Configuration**: https://help.mikrotik.com/docs/display/ROS/WiFi
-- **Community Forum**: https://forum.mikrotik.com/
+- **RouterOS Firewall**: https://help.mikrotik.com/docs/display/ROS/Filter
+- **VLAN Configuration**: https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching
 
-## Important Notes
+### **Community Resources:**
+- **MikroTik Community Forum**: https://forum.mikrotik.com/
+- **MikroTik Training**: https://mikrotik.com/training
+- **RouterOS Downloads**: https://mikrotik.com/download
 
-⚠️ **Sanitized Configuration**: Remember to customize all placeholders before deployment
-
-⚠️ **Configuration Dependencies**: Always apply configurations in the specified sequence
-
-⚠️ **WiFi Steering**: Update neighbor-group names after initial CAPsMAN provisioning
-
-⚠️ **Security**: Management network provides full admin access - protect credentials
-
-⚠️ **Testing**: Thoroughly test all functionality after customization and deployment
+### **Technical References:**
+- **RouterOS v7 WiFi**: https://help.mikrotik.com/docs/display/ROS/WiFi
+- **Policy-Based Routing**: https://help.mikrotik.com/docs/display/ROS/Policy+Based+Routing
+- **Bridge VLAN Filtering**: https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Filtering
 
 ---
 
-**Disclaimer**: This sanitized configuration is provided as a template. Ensure all settings are appropriate for your specific environment and security requirements before deployment.
+**Disclaimer**: This sanitized configuration is provided as a template. Ensure all settings are appropriate for your specific environment and security requirements before deployment. The original configuration was heavily inspired by the MikroTik community forum discussion linked above.
