@@ -41,6 +41,38 @@ This sanitized configuration provides a complete enterprise-grade setup for Mikr
 
 **Note**: Failover and firewall configurations are not included in this sanitized version as they have not been fully tested yet.
 
+## Hardware Requirements
+
+### Tested Hardware Configuration
+
+This configuration has been **tested and verified working** on the following hardware setup:
+
+- **Main Router**: MikroTik Chateau 5G R17 ax
+  - RouterOS v7.x
+  - WiFi 6 (802.11ax) dual-band radios
+  - 2.5 Gigabit Ethernet WAN port
+  - Built-in 5G/LTE modem for backup WAN
+  - CAPsMAN controller functionality
+
+- **Access Points**: MikroTik cAP ax devices
+  - WiFi 6 (802.11ax) dual-band radios
+  - Managed by CAPsMAN controller
+  - Auto-provisioning support
+  - VLAN-aware bridge configuration
+
+- **Backhaul Connection**: MoCA (Multimedia over Coax Alliance)
+  - High-performance coaxial cable backhaul
+  - VLAN trunk support for all network segments
+  - Reliable connection between main router and CAP devices
+  - No additional WiFi mesh overhead
+
+### Hardware Notes
+
+- **RouterOS Version**: Requires RouterOS v7.x for WiFiWave2 and modern CAPsMAN features
+- **MoCA Compatibility**: Any MoCA 2.0+ adapters should work for backhaul
+- **CAP Device Variants**: Configuration should work with other cAP ax models (cAP ax, cAP ax lite, etc.)
+- **Alternative Backhaul**: Ethernet backhaul can be substituted for MoCA with minimal configuration changes
+
 ## Network Architecture
 
 ### VLAN Structure
