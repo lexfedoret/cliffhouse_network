@@ -227,7 +227,7 @@ This configuration has been **tested and verified working** on the following har
 This configuration was developed using the following resources:
 
 ### **Primary Inspiration:**
-- **MikroTik Forum Discussion**: [Chateau LTE12 and self-managed WiFi with CAPsMAN](https://forum.mikrotik.com/t/chateau-lte12-and-self-managed-wifi-with-capsman/176219) - The working forum example that heavily inspired this configuration approach
+- **MikroTik Forum Discussion**: [CAPsMAN configuration with management VLAN RouterOS 7.14.3](https://forum.mikrotik.com/t/guide-capsman-configuration-with-management-vlan-routeros-7-14-3/176344/14) - The working forum example that heavily inspired this configuration approach
 
 ### **Official Documentation:**
 - **MikroTik Documentation**: https://help.mikrotik.com/docs/
