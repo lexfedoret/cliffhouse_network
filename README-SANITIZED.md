@@ -1,35 +1,16 @@
-# MikroTik Router Configuration - Sanitized Version
+# MikroTik Router Configuration Guide
+
+**Last Updated:** [DATE]
 
 ## Overview
-This sanitized configuration provides a complete enterprise-grade setup for MikroTik routers with CAPsMAN controller and CAP device management:
+This configuration provides a comprehensive home network setup for your MikroTik router with CAPsMAN controller and CAP AX device management:
 
-- **CAPsMAN Controller**: Centralized WiFi management for CAP devices
+- **CAPsMAN Controller**: Centralized WiFi management for CAP AX devices
 - **VLAN Segmentation**: 4-VLAN architecture with proper isolation
-- **Backhaul Support**: High-performance backhaul for CAP devices
+- **Backhaul Support**: High-performance backhaul for CAP devices (MoCA/Ethernet)
 - **WiFi 6 (802.11ax)**: Dual-band networks with steering and optimization
-- **Advanced Failover**: Policy-based routing with health monitoring
+- **Advanced Failover**: Planned for future (hardware ready)
 - **Zero-Trust Security**: Comprehensive firewall with network isolation
-
-## ⚠️ Sanitization Notice
-
-**This is a sanitized version of the original configuration files. The following sensitive information has been replaced with placeholders:**
-
-### **Sanitized Variables:**
-- **Admin passwords** → **`YOUR_ADMIN_PASSWORD`** (all admin passwords)
-- **System identities** → **`YOUR_ROUTER_NAME`**, **`YOUR_CAP_NAME`** (device names)
-- **Time zone** → **`YOUR_TIME_ZONE`** (system time zone setting)
-- **Country** → **`YOUR_COUNTRY`** (WiFi country setting)
-- **ISP MTU** → **`YOUR_ISP_MTU`** (ISP-specific MTU setting for WAN interface)
-- **WiFi SSIDs** → **`network-mgmt`**, **`network-infra`**, **`network-data`**, **`network-alterdata`**, **`network-guest`** (all network names)
-- **WiFi passwords** → **`MGMT_WIFI_PASSWORD`**, **`INFRA_WIFI_PASSWORD`**, **`DATA_WIFI_PASSWORD`**, **`ALTERDATA_WIFI_PASSWORD`**, **`GUEST_WIFI_PASSWORD`** (all WiFi passwords)
-- **DNS servers** → **`8.8.8.8,8.8.4.4,1.1.1.1`** (public DNS instead of ISP-specific)
-- **WAN interface comments** → **`->wan`**, **`->backup-carrier`** (generic WAN references)
-- **Carrier settings** → **`backup.carrier.com`** (generic carrier APN)
-- **Device comments** → **`->device1`**, **`->device2`**, **`->device3`** (generic device references)
-- **Backhaul references** → **`->backhaul->caps`**, **`backhaul trunk`** (generic backhaul descriptions)
-- **Neighbor groups** → **`REPLACE_WITH_ACTUAL_HASH`** (placeholders for real CAPsMAN-generated hashes)
-- **Dates** → **`[DATE]`** (placeholder for configuration dates)
-- **Location references** → **`[LOCATION]`** (placeholder for physical locations)
 
 ## Configuration Sequence
 
@@ -37,41 +18,11 @@ This sanitized configuration provides a complete enterprise-grade setup for Mikr
 
 1. **`router-base-sanitized.rsc`** - Core router & CAPsMAN setup
 2. **`router-base-mtu-sanitized.rsc`** - MTU optimization for performance  
-3. **`router-base-steering-sanitized.rsc`** - WiFi band steering for CAP devices
+3. **`router-base-steering-sanitized.rsc`** - WiFi band steering for CAP AX devices
+4. **`router-firewall-sanitized.rsc`** - Comprehensive security rules (replaces base config's open firewall)
+5. **`router-logging-sanitized.rsc`** - Logging optimization (memory + disk audit)
 
-**Note**: Failover and firewall configurations are not included in this sanitized version as they have not been fully tested yet.
-
-## Hardware Requirements
-
-### Tested Hardware Configuration
-
-This configuration has been **tested and verified working** on the following hardware setup:
-
-- **Main Router**: MikroTik Chateau 5G R17 ax
-  - RouterOS v7.x
-  - WiFi 6 (802.11ax) dual-band radios
-  - 2.5 Gigabit Ethernet WAN port
-  - Built-in 5G/LTE modem for backup WAN
-  - CAPsMAN controller functionality
-
-- **Access Points**: MikroTik cAP ax devices
-  - WiFi 6 (802.11ax) dual-band radios
-  - Managed by CAPsMAN controller
-  - Auto-provisioning support
-  - VLAN-aware bridge configuration
-
-- **Backhaul Connection**: MoCA (Multimedia over Coax Alliance)
-  - High-performance coaxial cable backhaul
-  - VLAN trunk support for all network segments
-  - Reliable connection between main router and CAP devices
-  - No additional WiFi mesh overhead
-
-### Hardware Notes
-
-- **RouterOS Version**: Requires RouterOS v7.x for WiFiWave2 and modern CAPsMAN features
-- **MoCA Compatibility**: Any MoCA 2.0+ adapters should work for backhaul
-- **CAP Device Variants**: Configuration should work with other cAP ax models (cAP ax, cAP ax lite, etc.)
-- **Alternative Backhaul**: Ethernet backhaul can be substituted for MoCA with minimal configuration changes
+*Note: WAN failover config planned for future*
 
 ## Network Architecture
 
@@ -95,26 +46,46 @@ This configuration has been **tested and verified working** on the following har
 ### Physical Port Assignment
 | Port | Device | VLAN | Purpose |
 |------|---------|------|---------|
-| **ether1** | Device 1 | 2 | Infrastructure device |
-| **ether2** | Device 2 | 2 | Infrastructure device |
-| **ether3** | Device 3 | 2 | Infrastructure device |
-| **ether4** | Backhaul Adapter | Trunk | CAP backhaul (all VLANs) |
-| **ether5** | WAN Connection | WAN | Primary internet |
-| **lte1** | Backup WAN | WAN | Backup internet |
+| **ether1** | Backhaul Adapter | Trunk | CAP backhaul (all VLANs tagged) |
+| **ether2** | Device 1 | 2 | Infrastructure device |
+| **ether3** | Device 2 | 2 | Infrastructure device |
+| **ether4** | Device 3 | 2 | Infrastructure device |
+| **ether5** | WAN | WAN | Primary internet (2.5G) |
 
 ## Security Considerations (Cheat Sheet)
 
 ### Management Access
-- **Management WiFi**: Provides full admin access to all devices
+- **Management WiFi**: `network-mgmt` provides full admin access to all devices
+- **WebFig Access**: HTTPS only (TLS 1.2) at https://192.168.254.254 (self-signed certificate)
 - **Service Restrictions**: All management services restricted to management subnet (192.168.254.0/24)
-- **Strong Passwords**: Use complex passwords for all accounts and WiFi networks
+- **Strong Passwords**: Complex passwords used for all accounts and WiFi networks
 - **Regular Updates**: Keep RouterOS updated on all devices
 
 ### Network Isolation
 - **Zero-Trust**: Default deny policy with explicit allow rules
 - **VLAN Segmentation**: Proper isolation between network segments
-- **Guest Isolation**: Guest network completely isolated from private networks
-- **Firewall Logging**: Enable logging for security monitoring
+- **Guest Isolation**: L2 client isolation + L3 firewall isolation from private networks
+- **IoT Isolation**: Infrastructure devices isolated from each other (L2 client isolation)
+- **Firewall Logging**: Key drop rules logged (INPUT-DROP, FWD-DROP, GUEST-PRIV)
+- **Silent Drops**: WAN noise, IoT (6667), Spotify (57621), DHCP discover, NetBIOS (137)
+- **DNS Redirect**: Guest DNS forced through router (captive portal ready)
+- **MAC-Server**: Restricted to mgmt-only list (vlan1) - prevents guest MAC-Winbox access
+
+### Key Security Rules
+```routeros
+# Management network can access everything
+src-address=192.168.254.0/24 action=accept
+
+# Guest network isolated from all private networks
+src-address=172.16.252.0/23 dst-address-list=private-nets action=drop
+
+# Data network blocked from infrastructure and management
+src-address=172.16.250.0/23 dst-address=192.168.255.0/24 action=drop
+src-address=172.16.250.0/23 dst-address=192.168.254.0/24 action=drop
+
+# Infrastructure network internet access only
+src-address=192.168.255.0/24 out-interface-list=wan-interfaces action=accept
+```
 
 ## Troubleshooting Tips (Cheat Sheet)
 
@@ -138,7 +109,7 @@ This configuration has been **tested and verified working** on the following har
 
 ### WiFi Steering Issues
 ```routeros
-# Check neighbor groups
+# Check neighbor groups (update steering config with actual names)
 /interface wifi steering neighbor-group print
 
 # Verify steering policies
@@ -146,6 +117,21 @@ This configuration has been **tested and verified working** on the following har
 
 # Monitor client steering behavior
 /interface wifi registration-table print
+
+# Update steering configuration with actual group names
+/interface wifi steering set cap-steering-mgmt neighbor-group="actual-group-name"
+```
+
+### Firewall Issues
+```routeros
+# View firewall drops in log
+/log print where message~"DROP"
+
+# Check rule order (infra rules must be BEFORE default deny)
+/ip firewall filter print where chain=forward
+
+# View rule statistics
+/ip firewall filter print stats
 ```
 
 ### Network Connectivity
@@ -169,14 +155,10 @@ This configuration has been **tested and verified working** on the following har
 /ip firewall connection print
 ```
 
-### Failover Monitoring
+### Failover Monitoring (Future)
+*Failover config not yet implemented. These commands will be relevant when failover is configured.*
+
 ```routeros
-# Check failover status
-/system script environment print
-
-# Monitor failover events  
-/log print where topics~"info"
-
 # View active routes
 /ip route print where active
 
@@ -197,6 +179,21 @@ This configuration has been **tested and verified working** on the following har
 
 # Check client distribution across CAPs
 /interface wifi registration-table print
+```
+
+### Log Files
+```routeros
+# View disk log files
+/file print where type="log"
+
+# View security audit log (firewall events)
+# Download security.0.txt from Files in Winbox
+
+# View system log (dhcp/caps/script)
+# Download system.0.txt from Files in Winbox
+
+# Check log sizes
+/system logging action print
 ```
 
 ## Backup and Maintenance
@@ -222,12 +219,23 @@ This configuration has been **tested and verified working** on the following har
 /system resource print
 ```
 
+## Customization Checklist
+
+Before deploying, update these values in the configuration files:
+
+1. **Passwords**: Replace all `*_PASSWORD` placeholders
+2. **SSIDs**: Replace `network-*` with your preferred network names
+3. **Country**: Replace `YOUR_COUNTRY` with your country code
+4. **Radio MAC**: Replace `YOUR_RADIO_MAC` in provisioning rules
+5. **Device names**: Replace `router-main`, `cap-roof`, `cap-bsmnt` as needed
+6. **Steering hashes**: Update `<hash>` placeholders after initial provisioning
+
 ## Resources and Inspiration
 
 This configuration was developed using the following resources:
 
 ### **Primary Inspiration:**
-- **MikroTik Forum Discussion**: [CAPsMAN configuration with management VLAN RouterOS 7.14.3](https://forum.mikrotik.com/t/guide-capsman-configuration-with-management-vlan-routeros-7-14-3/176344/14) - The working forum example that heavily inspired this configuration approach
+- **MikroTik Forum Discussion**: [Chateau LTE12 and self-managed WiFi with CAPsMAN](https://forum.mikrotik.com/t/chateau-lte12-and-self-managed-wifi-with-capsman/176219) - The working forum example that heavily inspired this configuration approach
 
 ### **Official Documentation:**
 - **MikroTik Documentation**: https://help.mikrotik.com/docs/
@@ -248,4 +256,4 @@ This configuration was developed using the following resources:
 
 ---
 
-**Disclaimer**: This sanitized configuration is provided as a template. Ensure all settings are appropriate for your specific environment and security requirements before deployment. The original configuration was heavily inspired by the MikroTik community forum discussion linked above.
+**Note**: This configuration was heavily inspired by the MikroTik community forum discussion linked above. The original working example provided the foundation for this home network implementation.

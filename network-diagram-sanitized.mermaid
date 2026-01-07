@@ -1,0 +1,112 @@
+graph TD
+    %% WAN Connections
+    Internet[Internet]
+    PrimaryISP[Primary ISP<br/>Primary WAN]
+    BackupISP[Backup WAN<br/>LTE/5G Modem]
+    
+    Internet --> PrimaryISP
+    Internet --> BackupISP
+    
+    %% Router
+    Router[MikroTik Router<br/>router-main<br/><br/>CAPsMAN Controller<br/>Zero-Trust Firewall<br/>VLAN Segmentation]
+    
+    PrimaryISP -.->|ether5<br/>2.5G| Router
+    BackupISP -.->|lte1/sfp<br/>Backup| Router
+    
+    %% Bridge
+    Bridge[Bridge: br1<br/>VLAN Filtering Enabled]
+    Router --> Bridge
+    
+    %% VLANs (4-VLAN Setup)
+    VLAN1[VLAN 1 - Management<br/>192.168.254.0/24<br/>Gateway: .254.254<br/>Admin access only]
+    VLAN2[VLAN 2 - Infrastructure<br/>192.168.255.0/24<br/>Gateway: .255.1<br/>Smart home + compute]
+    VLAN3[VLAN 3 - Data<br/>172.16.250.0/23<br/>Gateway: .250.1<br/>User devices]
+    VLAN4[VLAN 4 - Guest<br/>172.16.252.0/23<br/>Gateway: .252.1<br/>Isolated guest access]
+    
+    Bridge --> VLAN1
+    Bridge --> VLAN2
+    Bridge --> VLAN3
+    Bridge --> VLAN4
+    
+    %% Ethernet Devices
+    Device1[Device 1<br/>Infrastructure]
+    Device2[Device 2<br/>Infrastructure]
+    Device3[Device 3<br/>Infrastructure]
+    
+    %% Ethernet Connections
+    Router -.->|ether2<br/>1G<br/>pvid=2| Device1
+    Router -.->|ether3<br/>1G<br/>pvid=2| Device2
+    Router -.->|ether4<br/>1G<br/>pvid=2| Device3
+    
+    Device1 --> VLAN2
+    Device2 --> VLAN2
+    Device3 --> VLAN2
+    
+    %% WiFi Networks
+    WiFi24[2.4GHz WiFi<br/>wifi2]
+    WiFi5[5GHz WiFi<br/>wifi1]
+    
+    Router --> WiFi24
+    Router --> WiFi5
+    
+    %% WiFi Virtual Interfaces
+    WiFiMgmt[network-mgmt<br/>Hidden - Management]
+    WiFiInfra[network-infra<br/>Hidden - Infrastructure]
+    WiFiData[network-data<br/>User Network]
+    WiFiAltData[network-alterdata<br/>Alternative User Network]
+    WiFiGuest[network-guest<br/>Guest Network]
+    
+    WiFi5 --> WiFiMgmt
+    WiFi24 --> WiFiInfra
+    WiFi24 --> WiFiData
+    WiFi5 --> WiFiAltData
+    WiFi24 --> WiFiGuest
+    
+    WiFiMgmt --> VLAN1
+    WiFiInfra --> VLAN2
+    WiFiData --> VLAN3
+    WiFiAltData --> VLAN3
+    WiFiGuest --> VLAN4
+    
+    %% DHCP Servers
+    DHCP1[DHCP Server 1<br/>Pool: .254.10-240<br/>Lease: Unlimited]
+    DHCP2[DHCP Server 2<br/>Pool: .255.10-240<br/>Lease: Unlimited]
+    DHCP3[DHCP Server 3<br/>Pool: .250.10-.251.240<br/>Lease: 365 days]
+    DHCP4[DHCP Server 4<br/>Pool: .252.10-.253.240<br/>Lease: 7 days]
+    
+    VLAN1 --> DHCP1
+    VLAN2 --> DHCP2
+    VLAN3 --> DHCP3
+    VLAN4 --> DHCP4
+    
+    %% Failover System (Planned)
+    subgraph FailoverSystem [WAN Failover - PLANNED]
+        FailoverNote[Future Implementation<br/>• Backup WAN available<br/>• Policy-based routing<br/>• Health monitoring]
+    end
+    
+    Router -.-> FailoverSystem
+    
+    %% Security Policies
+    subgraph SecurityMatrix [Firewall Security Matrix]
+        direction TB
+        SecRules[Access Control:<br/>• Management → All VLANs ✓<br/>• Infrastructure → Internet ✓<br/>• Data → Internet only ✓<br/>• Guest → Internet only ✓<br/>• Guest isolation ✓<br/>• Inter-VLAN blocks ✗]
+    end
+    
+    %% Styling
+    classDef wan fill:#e1f5fe
+    classDef router fill:#f3e5f5
+    classDef vlan fill:#e8f5e8
+    classDef device fill:#fff3e0
+    classDef wifi fill:#fce4ec
+    classDef security fill:#ffebee
+    classDef failover fill:#e0f2f1
+    
+    class PrimaryISP,BackupISP,Internet wan
+    class Router,Bridge router
+    class VLAN1,VLAN2,VLAN3,VLAN4 vlan
+    class Device1,Device2,Device3 device
+    class WiFi24,WiFi5,WiFiMgmt,WiFiInfra,WiFiData,WiFiAltData,WiFiGuest wifi
+    class SecurityMatrix security
+    class FailoverSystem failover
+
+
