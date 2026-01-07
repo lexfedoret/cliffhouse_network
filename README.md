@@ -1,7 +1,7 @@
 # MikroTik Router Configuration - Sanitized Version
 
 ## Overview
-This sanitized configuration provides a complete enterprise-grade setup for MikroTik routers with CAPsMAN controller and CAP device management:
+A home network configuration template for MikroTik routers with CAPsMAN controller and CAP AX devices:
 
 - **CAPsMAN Controller**: Centralized WiFi management for CAP devices
 - **VLAN Segmentation**: 4-VLAN architecture with proper isolation
