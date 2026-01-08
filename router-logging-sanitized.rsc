@@ -83,8 +83,12 @@
     /system logging remove $i
 }
 
-# Exclude wireless from default info rule (prevents wireless,info from going to memory)
-:do { /system logging set [find where topics~"info" and action=memory] topics=info,!wireless } on-error={}
+# Exclude wireless from memory logs (default rules don't handle exclusions properly)
+# Disable default info rule and create custom one
+:do { /system logging disable [find where topics~"info" and action=memory and default=yes] } on-error={}
+:if ([:len [/system logging find where topics~"info" and topics~"!wireless" and action=memory and default=no]] = 0) do={
+    /system logging add topics=info,!wireless action=memory
+}
 
 # Wireless to disk only (exclude debug) - check wifi-logs.x.txt for troubleshooting
 :if ([:len [/system logging find where topics~"wireless" and action=wifidisk]] = 0) do={
