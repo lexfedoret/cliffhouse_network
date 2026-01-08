@@ -72,27 +72,26 @@
 }
 
 # =====================================
-# WIRELESS LOGGING (separate from main log)
+# WIRELESS LOGGING (disk only - keeps Winbox clean)
 # =====================================
 
-# Remove default wireless rules (they flood main log)
+# Remove ALL wireless rules from memory (connect/disconnect spam)
 :foreach i in=[/system logging find where topics~"wireless" and action=memory] do={
     /system logging remove $i
 }
-
-# Wireless to dedicated memory buffer (exclude debug)
-:if ([:len [/system logging find where topics~"wireless" and action=wifimem]] = 0) do={
-    /system logging add topics=wireless,!debug action=wifimem
+:foreach i in=[/system logging find where topics~"wireless" and action=wifimem] do={
+    /system logging remove $i
 }
 
-# Wireless to disk (exclude debug)
+# Wireless to disk only (exclude debug) - check wifi-logs.x.txt for troubleshooting
 :if ([:len [/system logging find where topics~"wireless" and action=wifidisk]] = 0) do={
     /system logging add topics=wireless,!debug action=wifidisk
 }
 
 :log info "Logging optimization applied"
-:log info "Memory logs reduced: main=500, wifi=200"
-:log info "Disk logs enabled: security (firewall), system (dhcp/caps/script)"
+:log info "Memory logs reduced: main=500 lines"
+:log info "Wireless logs: disk only (wifi-logs.x.txt) - keeps Winbox clean"
+:log info "Disk logs enabled: security (firewall), system (dhcp/caps/script), wifi"
 :log info "Debug excluded from all disk logging (best practice)"
 
 # =====================================
@@ -107,11 +106,12 @@
 #
 # Memory Logs (Winbox):
 # - Main memory: 500 lines (info/error/warning)
-# - WiFi memory: 200 lines (wireless,!debug)
+# - WiFi memory: DISABLED (routed to disk only to reduce connect/disconnect spam)
 #
 # Best Practice: Debug excluded from all custom rules
 # - Debug is for troubleshooting, not production
 # - Prevents: DHCP packet dumps, CAPsMAN self-discovery spam, verbose wireless
+# - Wireless connect/disconnect logs on disk only (check wifi-logs.x.txt)
 #
 # Monitoring Commands:
 # /system logging print                    # View logging rules
