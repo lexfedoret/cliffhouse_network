@@ -143,9 +143,9 @@ add name=guest-datapath vlan-id=4 bridge=br1 client-isolation=yes
 /interface wifi configuration
 # 2.4GHz networks - dedicated channels per location
 # TX Power: Roof=15dBm, Main=15dBm, Basement CAP=20dBm (boosted for concrete penetration)
-add name=infra-2ghz-roof ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch1 tx-power=15 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
-add name=data-2ghz-roof ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch1 tx-power=15 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
-add name=guest-2ghz-roof ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch1 tx-power=15 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
+add name=infra-2ghz-roof ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
+add name=data-2ghz-roof ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
+add name=guest-2ghz-roof ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
 
 add name=infra-2ghz-main ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch6 tx-power=15 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
 add name=data-2ghz-main ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch6 tx-power=15 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
@@ -156,8 +156,8 @@ add name=data-2ghz-bsmnt ssid="network-data" security=sec-data datapath=data-dat
 add name=guest-2ghz-bsmnt ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch11 tx-power=20 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
 
 # 5GHz networks (20 dBm TX power - boosted for better indoor penetration)
-add name=mgmt-5ghz ssid="network-mgmt" security=sec-mgmt datapath=mgmt-datapath channel=5ghz-channels tx-power=20 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
-add name=alterdata-5ghz ssid="network-alterdata" security=sec-alterdata datapath=data-datapath channel=5ghz-channels tx-power=20 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
+add name=mgmt-5ghz ssid="network-mgmt" security=sec-mgmt datapath=mgmt-datapath channel=5ghz-channels tx-power=21 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
+add name=alterdata-5ghz ssid="network-alterdata" security=sec-alterdata datapath=data-datapath channel=5ghz-channels tx-power=21 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
 
 # create capsman provisioning rules (for CAP ax devices to auto-discover)
 /interface wifi provisioning
