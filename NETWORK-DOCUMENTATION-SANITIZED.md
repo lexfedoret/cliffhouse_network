@@ -115,7 +115,7 @@ VLAN 4 (Guest):         172.16.252.10 - 172.16.253.240 (486 addresses)
 - **Load Balancing:** Client distribution across CAPs
 - **Neighbor Groups:** Auto-discovered by SSID
 - **Roaming:** Seamless handoff between access points
-- **RSSI Enforcement:** Band-specific (5GHz: -72 dBm, 2.4GHz: -75 dBm)
+- **RSSI Enforcement:** Unified -75 dBm for both bands (reduces flapping)
 
 #### Security Configuration
 - **Management:** WPA3-PSK only (highest security)

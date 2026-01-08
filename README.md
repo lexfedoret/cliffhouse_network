@@ -108,7 +108,7 @@ This configuration has been **tested and verified working** on the following har
 ### WiFi Configuration
 - **TX Power**: 2.4GHz = 15-20 dBm (location-based), 5GHz = 20 dBm
 - **Channel Assignment**: Non-overlapping 2.4GHz channels (1, 6, 11) per location
-- **RSSI Enforcement**: 5GHz = -72 dBm, 2.4GHz = -75 dBm (band-specific thresholds)
+- **RSSI Enforcement**: Unified -75 dBm for both bands (reduces flapping)
 - **Client Isolation**: Enabled on Guest and Infrastructure networks (L2)
 
 ## Security Features

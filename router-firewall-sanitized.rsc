@@ -77,18 +77,18 @@ add chain=forward action=drop log=yes log-prefix="FWD-DROP" comment="drop all ot
 # =====================================
 
 # Band-specific RSSI thresholds based on WiFi survey analysis:
-# - 5GHz: -72 dBm threshold (relaxed for better coverage, weak clients fall back to 2.4GHz)
+# - 5GHz: -75 dBm threshold (unified with 2.4GHz for stability, reduces flapping)
 # - 2.4GHz: -75 dBm threshold (lenient for concrete penetration and outdoor areas)
 #
 # This ensures devices use strong 2.4GHz instead of sticking to weak 5GHz
 
 /interface wifi access-list
 
-# 5GHz networks - -72 dBm threshold
-add ssid-regexp="network-mgmt" signal-range=-72..120 action=accept comment="5GHz mgmt: accept -72+"
-add ssid-regexp="network-mgmt" signal-range=-120..-73 action=reject comment="5GHz mgmt: reject weak (<-72)"
-add ssid-regexp="network-alterdata" signal-range=-72..120 action=accept comment="5GHz alterdata: accept -72+"
-add ssid-regexp="network-alterdata" signal-range=-120..-73 action=reject comment="5GHz alterdata: reject weak (<-72)"
+# 5GHz networks - -75 dBm threshold (unified with 2.4GHz for stability)
+add ssid-regexp="network-mgmt" signal-range=-75..120 action=accept comment="5GHz mgmt: accept -75+"
+add ssid-regexp="network-mgmt" signal-range=-120..-76 action=reject comment="5GHz mgmt: reject weak (<-75)"
+add ssid-regexp="network-alterdata" signal-range=-75..120 action=accept comment="5GHz alterdata: accept -75+"
+add ssid-regexp="network-alterdata" signal-range=-120..-76 action=reject comment="5GHz alterdata: reject weak (<-75)"
 
 # 2.4GHz networks - lenient -75 dBm threshold
 add ssid-regexp="network-infra" signal-range=-75..120 action=accept comment="2.4GHz infra: accept -75+"
@@ -191,7 +191,7 @@ add chain=dstnat src-address=172.16.252.0/23 protocol=tcp dst-port=53 action=red
 :log info "data network restricted from management/infrastructure"
 :log info "infrastructure network accessible only from management"
 :log info "firewall hardening patch applied - enhanced security"
-:log info "WiFi access list configured - band-specific thresholds: 5GHz=-72dBm, 2.4GHz=-75dBm"
+:log info "WiFi access list configured - unified threshold: -75dBm (both bands)"
 :log info "WAN noise silenced - internet scanner drops not logged"
 
 # =====================================
@@ -244,7 +244,7 @@ add chain=dstnat src-address=172.16.252.0/23 protocol=tcp dst-port=53 action=red
 #   /interface wifi datapath set infra-datapath client-isolation=yes
 #
 # WiFi RSSI Enforcement (Band-Specific):
-# - 5GHz threshold: -72 dBm (relaxed - forces fallback to 2.4GHz when weak)
+# - 5GHz threshold: -75 dBm (unified with 2.4GHz for stability)
 # - 2.4GHz threshold: -75 dBm (lenient - for concrete penetration and outdoor)
 # - Prevents sticky clients from using weak 5GHz when 2.4GHz is stronger
 #
