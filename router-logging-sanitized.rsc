@@ -83,12 +83,30 @@
     /system logging remove $i
 }
 
-# Exclude wireless from memory logs (default rules don't handle exclusions properly)
-# Disable default info rule and create custom one
+# IMPORTANT: The info,!wireless syntax does NOT work for composite topics like wireless,info
+# RouterOS bug: !wireless only excludes messages with SOLE wireless topic, not combined topics
+# Also: caps,info catches wireless events (CAPsMAN and WiFi share logging topics)
+#
+# SOLUTION: Disable default info rule and add specific topic rules (excluding caps)
 :do { /system logging disable [find where topics~"info" and action=memory and default=yes] } on-error={}
-:if ([:len [/system logging find where topics~"info" and topics~"!wireless" and action=memory and default=no]] = 0) do={
-    /system logging add topics=info,!wireless action=memory
+
+# Add specific info rules for topics we want in memory (NOT caps - it catches wireless!)
+:if ([:len [/system logging find where topics="system,info" and action=memory]] = 0) do={
+    /system logging add topics=system,info action=memory
 }
+:if ([:len [/system logging find where topics="script,info" and action=memory]] = 0) do={
+    /system logging add topics=script,info action=memory
+}
+:if ([:len [/system logging find where topics="dhcp,info" and action=memory]] = 0) do={
+    /system logging add topics=dhcp,info action=memory
+}
+:if ([:len [/system logging find where topics="account,info" and action=memory]] = 0) do={
+    /system logging add topics=account,info action=memory
+}
+:if ([:len [/system logging find where topics="ssh,info" and action=memory]] = 0) do={
+    /system logging add topics=ssh,info action=memory
+}
+# NOTE: Do NOT add caps,info - it catches wireless events in RouterOS 7
 
 # Wireless to disk only (exclude debug) - check wifi-logs.x.txt for troubleshooting
 :if ([:len [/system logging find where topics~"wireless" and action=wifidisk]] = 0) do={
