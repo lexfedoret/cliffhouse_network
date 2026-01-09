@@ -139,26 +139,29 @@ add name=data-datapath vlan-id=3 bridge=br1
 add name=guest-datapath vlan-id=4 bridge=br1 client-isolation=yes
 
 # create capsman configurations for all networks
-# TX Power: Roof/Main 2.4GHz=15dBm, Basement 2.4GHz=20dBm, All 5GHz=20dBm
+# TX Power Summary (sandwich pattern for optimal cell sizing):
+#   2.4GHz: Main=15, Roof=18, Basement=20
+#   5GHz:   Main=21, Roof=18, Basement=20
 /interface wifi configuration
-# 2.4GHz networks - dedicated channels per location
-# TX Power: Roof=15dBm, Main=15dBm, Basement CAP=20dBm (boosted for concrete penetration)
-add name=infra-2ghz-roof ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
-add name=data-2ghz-roof ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
-add name=guest-2ghz-roof ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
 
-add name=infra-2ghz-main ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch6 tx-power=15 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
-add name=data-2ghz-main ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch6 tx-power=15 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
-add name=guest-2ghz-main ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch6 tx-power=15 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
+# Roof CAP 2.4GHz (TX: 18, Channel 1)
+add name=infra-2ghz-roof ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor comment="->cap-roof"
+add name=data-2ghz-roof ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=no country="YOUR_COUNTRY" installation=indoor comment="->cap-roof"
+add name=guest-2ghz-roof ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch1 tx-power=18 hide-ssid=no country="YOUR_COUNTRY" installation=indoor comment="->cap-roof"
 
-add name=infra-2ghz-bsmnt ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch11 tx-power=20 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
-add name=data-2ghz-bsmnt ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch11 tx-power=20 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
-add name=guest-2ghz-bsmnt ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch11 tx-power=20 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
+# Main Router 2.4GHz (TX: 15, Channel 6) - lowest power, sandwiched between Roof and Basement
+add name=infra-2ghz-main ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch6 tx-power=15 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor comment="->main-router"
+add name=data-2ghz-main ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch6 tx-power=15 hide-ssid=no country="YOUR_COUNTRY" installation=indoor comment="->main-router"
+add name=guest-2ghz-main ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch6 tx-power=15 hide-ssid=no country="YOUR_COUNTRY" installation=indoor comment="->main-router"
 
-# 5GHz networks - Per-AP TX power (sandwich pattern: main router strongest, CAPs reduced for cell sizing)
-# Main router 5GHz (TX: 21) - serves primary area
-add name=mgmt-5ghz ssid="network-mgmt" security=sec-mgmt datapath=mgmt-datapath channel=5ghz-channels tx-power=21 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor
-add name=alterdata-5ghz ssid="network-alterdata" security=sec-alterdata datapath=data-datapath channel=5ghz-channels tx-power=21 hide-ssid=no country="YOUR_COUNTRY" installation=indoor
+# Basement CAP 2.4GHz (TX: 20, Channel 11) - highest power for concrete penetration
+add name=infra-2ghz-bsmnt ssid="network-infra" security=sec-infra datapath=infra-datapath channel=2ghz-ch11 tx-power=20 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor comment="->cap-bsmnt"
+add name=data-2ghz-bsmnt ssid="network-data" security=sec-data datapath=data-datapath channel=2ghz-ch11 tx-power=20 hide-ssid=no country="YOUR_COUNTRY" installation=indoor comment="->cap-bsmnt"
+add name=guest-2ghz-bsmnt ssid="network-guest" security=sec-guest datapath=guest-datapath channel=2ghz-ch11 tx-power=20 hide-ssid=no country="YOUR_COUNTRY" installation=indoor comment="->cap-bsmnt"
+
+# Main Router 5GHz (TX: 21) - strongest, serves primary workstation area
+add name=mgmt-5ghz-main ssid="network-mgmt" security=sec-mgmt datapath=mgmt-datapath channel=5ghz-channels tx-power=21 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor comment="->main-router"
+add name=alterdata-5ghz-main ssid="network-alterdata" security=sec-alterdata datapath=data-datapath channel=5ghz-channels tx-power=21 hide-ssid=no country="YOUR_COUNTRY" installation=indoor comment="->main-router"
 
 # Roof CAP 5GHz (TX: 18) - reduced to avoid overlap with main router below
 add name=mgmt-5ghz-roof ssid="network-mgmt" security=sec-mgmt datapath=mgmt-datapath channel=5ghz-channels tx-power=18 hide-ssid=yes country="YOUR_COUNTRY" installation=indoor comment="->cap-roof"
@@ -179,7 +182,7 @@ add action=create-dynamic-enabled identity-regexp="cap-bsmnt" supported-bands=2g
 
 # provision 5GHz radios with per-AP TX power (MAC-based for precise control)
 # Replace YOUR_5GHZ_RADIO_MAC_* with actual radio MACs from your devices
-add action=create-dynamic-enabled radio-mac=YOUR_5GHZ_RADIO_MAC_MAIN master-configuration=mgmt-5ghz slave-configurations=alterdata-5ghz comment="auto-provision 5ghz radio - main (TX: 21)"
+add action=create-dynamic-enabled radio-mac=YOUR_5GHZ_RADIO_MAC_MAIN master-configuration=mgmt-5ghz-main slave-configurations=alterdata-5ghz-main comment="auto-provision 5ghz radio - main (TX: 21)"
 add action=create-dynamic-enabled radio-mac=YOUR_5GHZ_RADIO_MAC_ROOF master-configuration=mgmt-5ghz-roof slave-configurations=alterdata-5ghz-roof comment="auto-provision 5ghz radio - roof (TX: 18)"
 add action=create-dynamic-enabled radio-mac=YOUR_5GHZ_RADIO_MAC_BSMNT master-configuration=mgmt-5ghz-bsmnt slave-configurations=alterdata-5ghz-bsmnt comment="auto-provision 5ghz radio - basement (TX: 20)"
 
