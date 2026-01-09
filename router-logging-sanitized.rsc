@@ -19,13 +19,6 @@
 # Reduce main memory log (Winbox view) - less noise
 /system logging action set memory memory-lines=500
 
-# WiFi memory log (separate from main log)
-:if ([:len [/system logging action find where name="wifimem"]] = 0) do={
-    /system logging action add name=wifimem target=memory memory-lines=200 memory-stop-on-full=no
-} else={
-    /system logging action set wifimem memory-lines=200
-}
-
 # WiFi disk log
 :if ([:len [/system logging action find where name="wifidisk"]] = 0) do={
     /system logging action add name=wifidisk target=disk disk-file-name=wifi-logs disk-lines-per-file=1000
@@ -77,9 +70,6 @@
 
 # Remove ALL wireless rules from memory (connect/disconnect spam)
 :foreach i in=[/system logging find where topics~"wireless" and action=memory] do={
-    /system logging remove $i
-}
-:foreach i in=[/system logging find where topics~"wireless" and action=wifimem] do={
     /system logging remove $i
 }
 
